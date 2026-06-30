@@ -97,5 +97,4 @@ func _draw_health_bar() -> void:
 	if max_health > 0:
 		health_ratio = float(health) / float(max_health)
 
-	draw_rect(Rect2(Vector2(-28, -52), Vector2(56, 6)), Color(0.12, 0.12, 0.14, 1.0), true)
-	draw_rect(Rect2(Vector2(-28, -52), Vector2(56 * health_ratio, 6)), Color(0.3, 0.95, 0.55, 1.0), true)
+	_draw_health_bar_rect(RoundedBarDrawer.centered_actor_health_bar_rect(-52.0, 6.0), health_ratio)

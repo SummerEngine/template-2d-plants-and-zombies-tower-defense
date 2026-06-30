@@ -3,6 +3,8 @@ extends Node2D
 
 signal destroyed(defender: Node)
 
+const RoundedBarDrawer := preload("res://scripts/defense/rounded_bar_drawer.gd")
+
 var display_name: String = "Defender"
 var kind: String = "defender"
 var lane: int = 0
@@ -30,5 +32,14 @@ func _draw() -> void:
 	var health_ratio := 0.0
 	if max_health > 0:
 		health_ratio = float(health) / float(max_health)
-	draw_rect(Rect2(Vector2(-28, -38), Vector2(56, 6)), Color(0.12, 0.12, 0.14, 1.0), true)
-	draw_rect(Rect2(Vector2(-28, -38), Vector2(56 * health_ratio, 6)), Color(0.3, 0.95, 0.55, 1.0), true)
+	_draw_health_bar_rect(RoundedBarDrawer.centered_actor_health_bar_rect(-38.0, 6.0), health_ratio)
+
+
+func _draw_health_bar_rect(bar_rect: Rect2, health_ratio: float) -> void:
+	RoundedBarDrawer.draw_rounded_bar(
+		self,
+		bar_rect,
+		health_ratio,
+		Color(0.3, 0.95, 0.55, 1.0),
+		Color(0.12, 0.12, 0.14, 1.0)
+	)

@@ -106,15 +106,16 @@ func _apply_responsive_layout(size_override: Vector2 = Vector2.ZERO) -> void:
 	var controls_height: float = 34.0 if wide else 54.0
 	var message_width: float = minf(560.0, usable_width)
 	var message_height: float = 50.0 if wide else 46.0
-	var energy_width: float = minf(360.0 if wide else usable_width * 0.78, usable_width)
-	var energy_height: float = 18.0 if wide else 16.0
-	var show_controls: bool = size.y >= 380.0 and size.x >= 420.0
 	var board_rect := _get_board_rect()
+	var energy_width: float = board_rect.size.x if board_rect.size.x > 0.0 else minf(360.0, usable_width)
+	var energy_height: float = 18.0 if wide else 16.0
+	var energy_zone_pixels: float = maxf(energy_height, size.y * 0.10)
+	var show_controls: bool = size.y >= 380.0 and size.x >= 420.0
 	var board_bottom: float = margin + stats_height
 	if board_rect.size != Vector2.ZERO:
 		board_bottom = board_rect.end.y
 	var controls_top: float = size.y - controls_height - margin
-	var required_below_board_space := energy_height + message_height + 24.0
+	var required_below_board_space := energy_zone_pixels + message_height + 32.0
 	if show_controls and controls_top - board_bottom < required_below_board_space:
 		show_controls = false
 
@@ -130,22 +131,23 @@ func _apply_responsive_layout(size_override: Vector2 = Vector2.ZERO) -> void:
 	if show_controls:
 		_set_rect(bottom_left, Vector2(margin, size.y - controls_height - margin), Vector2(usable_width, controls_height))
 
-	var bottom_reserved_top: float = size.y - margin
-	if show_controls:
-		bottom_reserved_top = size.y - controls_height - margin
-	var min_energy_y: float = board_bottom + 8.0
-	var max_energy_y: float = bottom_reserved_top - energy_height - message_height - 16.0
-	var desired_energy_y: float = size.y * 0.8 - energy_height * 0.5
-	var energy_y: float = min_energy_y
-	if max_energy_y >= min_energy_y:
-		energy_y = clampf(desired_energy_y, min_energy_y, max_energy_y)
+	var energy_zone_top: float = board_bottom + 8.0
+	var latest_energy_bottom: float = size.y - message_height - 10.0
+	var energy_zone_bottom: float = minf(latest_energy_bottom, energy_zone_top + energy_zone_pixels)
+	var energy_y: float = energy_zone_top
+	if energy_zone_bottom > energy_zone_top + energy_height:
+		energy_y = energy_zone_top + (energy_zone_bottom - energy_zone_top - energy_height) * 0.5
 	_set_rect(energy_meter, Vector2((size.x - energy_width) * 0.5, energy_y), Vector2(energy_width, energy_height))
 
 	var message_y: float = energy_y + energy_height + 8.0
 	var min_message_y: float = margin + stats_height + 8.0
 	if wide:
 		min_message_y = margin
-	message_y = maxf(min_message_y, message_y)
+	var max_message_y: float = maxf(0.0, size.y - message_height - 2.0)
+	if max_message_y >= min_message_y:
+		message_y = clampf(message_y, min_message_y, max_message_y)
+	else:
+		message_y = max_message_y
 	_set_rect(bottom_center, Vector2((size.x - message_width) * 0.5, message_y), Vector2(message_width, message_height))
 
 	var modal_width: float = minf(420.0, usable_width)

@@ -15,6 +15,11 @@ const SHARDS: Array[Dictionary] = [
 var _age: float = 0.0
 
 
+func _ready() -> void:
+	z_as_relative = false
+	z_index = 1000
+
+
 func _process(delta: float) -> void:
 	_age += delta
 	if _age >= lifetime:

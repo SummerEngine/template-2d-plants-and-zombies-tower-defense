@@ -139,6 +139,11 @@ func get_enemy_spawn_position(lane: int) -> Vector2:
 	)
 
 
+func apply_depth_sort(actor: Node2D) -> void:
+	actor.z_as_relative = false
+	actor.z_index = int(actor.global_position.y)
+
+
 func get_breach_y() -> float:
 	return get_board_rect().end.y + 54.0 * get_actor_scale()
 
@@ -163,6 +168,7 @@ func place_defender(defender: Node2D, cell: Vector2i) -> bool:
 	defender.set("row", clamped.y)
 	apply_actor_scale(defender)
 	defender.global_position = grid_to_world(clamped)
+	apply_depth_sort(defender)
 	if defender.has_signal("destroyed"):
 		defender.destroyed.connect(_on_defender_destroyed)
 	queue_redraw()
@@ -221,6 +227,7 @@ func _reposition_occupied_defenders() -> void:
 		var defender_node := defender as Node2D
 		apply_actor_scale(defender_node)
 		defender_node.global_position = grid_to_world(cell)
+		apply_depth_sort(defender_node)
 
 
 func _cell_key(cell: Vector2i) -> String:
@@ -244,24 +251,33 @@ func _fit_to_viewport(size_override: Vector2 = Vector2.ZERO) -> void:
 	var viewport_size: Vector2 = size_override
 	if viewport_size == Vector2.ZERO:
 		viewport_size = get_viewport_rect().size
-	var wide_layout: bool = viewport_size.x >= 860.0 and viewport_size.y >= 500.0
-	var side_reserve: float = 250.0 if wide_layout else 28.0
-	var hud_margin: float = clampf(viewport_size.x * 0.025, 10.0, 22.0)
-	var top_margin: float = 44.0 if wide_layout else hud_margin + 150.0
-	var bottom_margin: float = 126.0 if wide_layout else hud_margin + 116.0
-	var available_width: float = maxf(180.0, viewport_size.x - side_reserve * 2.0)
+	var wide := viewport_size.x >= 860.0 and viewport_size.y >= 500.0
+	var hud_margin := clampf(viewport_size.x * 0.025, 10.0, 22.0)
+	var side_panel_width := minf(236.0, maxf(180.0, viewport_size.x - hud_margin * 2.0))
+	var horizontal_grid_space := viewport_size.x * 0.80
+	if wide:
+		horizontal_grid_space = maxf(180.0, viewport_size.x - (side_panel_width + hud_margin + 12.0) * 2.0)
+
+	var top_reserved := 10.0
+	if not wide:
+		top_reserved = hud_margin + 118.0 + 8.0
+
+	var energy_height := 18.0 if wide else 16.0
+	var message_height := 50.0 if wide else 46.0
+	var bottom_reserved := energy_height + message_height + 20.0
+	var available_height := maxf(float(rows) * 20.0, viewport_size.y - top_reserved - bottom_reserved)
+	var total_size: float = minf(horizontal_grid_space, available_height)
+	var side: float = floorf(total_size / float(columns))
 	var min_side: float = 42.0
 	if viewport_size.x < 520.0 or viewport_size.y < 540.0:
 		min_side = 24.0
 	if viewport_size.x < 460.0 or viewport_size.y < 420.0:
 		min_side = 20.0
-	var available_height: float = maxf(float(rows) * min_side, viewport_size.y - top_margin - bottom_margin)
-	var side: float = floorf(minf(available_width / float(columns), available_height / float(rows)))
-	side = clampf(side, min_side, 112.0)
+	side = maxf(side, min_side)
 	cell_size = Vector2(side, side)
 	origin = Vector2(
 		maxf(10.0, (viewport_size.x - side * float(columns)) * 0.5),
-		maxf(top_margin, top_margin + (available_height - side * float(rows)) * 0.5)
+		maxf(10.0, top_reserved + (available_height - side * float(rows)) * 0.5)
 	)
 	cursor_cell = clamp_placement_cell(cursor_cell)
 	_reposition_occupied_defenders()

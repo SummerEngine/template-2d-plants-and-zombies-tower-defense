@@ -7,8 +7,8 @@ const EGG_THROW_DURATION := 0.38
 const IDLE_BOUNCES_PER_SECOND := 0.65
 const IDLE_BOB_PIXELS := 0.65
 const IDLE_SQUASH_AMOUNT := 0.01
-const CHICKEN_DRAW_BASE_SIZE := Vector2(50.0, 72.0)
-const CHICKEN_FEET_LOCAL_Y := 17.0
+const CHICKEN_DRAW_BASE_SIZE := Vector2(45.0, 64.8)
+const CHICKEN_FEET_LOCAL_Y := 15.3
 
 @export var attack_interval: float = 0.82
 @export var damage: int = 28
@@ -17,8 +17,8 @@ var _attack_timer: float = 0.0
 var _idle_time: float = 0.0
 var _throw_time_left: float = 0.0
 var _hit_time_left: float = 0.0
-var _egg_start: Vector2 = Vector2(0, -50)
-var _egg_end: Vector2 = Vector2(0, -96)
+var _egg_start: Vector2 = Vector2(0, -45.0)
+var _egg_end: Vector2 = Vector2(0, -86.4)
 var _impact_time_left: float = 0.0
 var _pending_shell_burst: bool = false
 var _pending_impact_position: Vector2 = Vector2.ZERO
@@ -118,8 +118,7 @@ func _draw_health_bar() -> void:
 	if max_health > 0:
 		health_ratio = float(health) / float(max_health)
 
-	draw_rect(Rect2(Vector2(-28, -52), Vector2(56, 6)), Color(0.12, 0.12, 0.14, 1.0), true)
-	draw_rect(Rect2(Vector2(-28, -52), Vector2(56 * health_ratio, 6)), Color(0.3, 0.95, 0.55, 1.0), true)
+	_draw_health_bar_rect(RoundedBarDrawer.centered_actor_health_bar_rect(-46.8, 5.4), health_ratio)
 
 
 func _find_target(enemies: Array[Node]) -> Node:
