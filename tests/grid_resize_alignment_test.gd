@@ -37,6 +37,17 @@ func _init() -> void:
 	enemy.global_position.y = start_board_rect.position.y + start_board_rect.size.y * 0.45
 	var enemy_progress := _vertical_progress(start_board_rect, enemy.global_position.y)
 
+	var approaching_enemy: Node2D = EnemyScript.new()
+	enemies.add_child(approaching_enemy)
+	approaching_enemy.call("configure", grid, 4, 1)
+	var approaching_spawn_position: Vector2 = grid.call("get_enemy_spawn_position", 4)
+	approaching_enemy.global_position.y = lerpf(approaching_spawn_position.y, start_board_rect.position.y, 0.35)
+	var approaching_progress := _approach_progress(
+		approaching_spawn_position.y,
+		start_board_rect.position.y,
+		approaching_enemy.global_position.y
+	)
+
 	grid.call("_fit_to_viewport", Vector2(480, 640))
 	var resized_actor_scale: float = grid.call("get_actor_scale")
 
@@ -61,12 +72,31 @@ func _init() -> void:
 		_fail("Enemy did not rescale with the grid cell after resize.")
 		return
 
+	var expected_approaching_spawn_position: Vector2 = grid.call("get_enemy_spawn_position", 4)
+	var expected_approaching_y := lerpf(expected_approaching_spawn_position.y, resized_board_rect.position.y, approaching_progress)
+	if absf(approaching_enemy.global_position.x - expected_approaching_spawn_position.x) > 0.1:
+		_fail("Approaching enemy did not stay aligned to its lane after resize.")
+		return
+	if absf(approaching_enemy.global_position.y - expected_approaching_y) > 0.1:
+		_fail("Approaching enemy did not preserve off-grid approach progress after resize.")
+		return
+	if absf(approaching_enemy.scale.x - resized_actor_scale) > 0.001 or absf(approaching_enemy.scale.y - resized_actor_scale) > 0.001:
+		_fail("Approaching enemy did not rescale with the grid cell after resize.")
+		return
+
 	print("grid_resize_alignment_test: passed")
 	quit(0)
 
 
 func _vertical_progress(board_rect: Rect2, y_position: float) -> float:
 	return clampf((y_position - board_rect.position.y) / board_rect.size.y, 0.0, 1.0)
+
+
+func _approach_progress(spawn_y: float, board_top_y: float, y_position: float) -> float:
+	if board_top_y <= spawn_y:
+		return 1.0
+
+	return clampf((y_position - spawn_y) / (board_top_y - spawn_y), 0.0, 1.0)
 
 
 func _fail(message: String) -> void:

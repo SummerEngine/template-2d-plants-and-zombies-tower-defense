@@ -1,9 +1,13 @@
 extends "res://scripts/defense/defender_base.gd"
 
 const CHICKEN_TEXTURE: Texture2D = preload("res://assets/art/chicken_rear_bazooka_defender.png")
+const EGG_ANIMATION_SHEET: Texture2D = preload("res://assets/summer/a6ed92e2-6167-49fc-b8bf-3b2446486ab3/2026-06-30/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png")
 const EggShellBurstScript := preload("res://scripts/defense/egg_shell_burst_effect.gd")
 const PopEffectScript := preload("res://scripts/defense/pop_effect.gd")
 const EGG_THROW_DURATION := 0.38
+const EGG_PROJECTILE_SOURCE_REGION := Rect2(Vector2(67.0, 32.0), Vector2(122.0, 152.0))
+const EGG_PROJECTILE_WIDTH_RATIO := 2.0 / 5.0
+const EGG_CLOCKWISE_SPIN_RADIANS_PER_SECOND := 18.0
 const IDLE_BOUNCES_PER_SECOND := 0.65
 const IDLE_BOB_PIXELS := 0.65
 const IDLE_SQUASH_AMOUNT := 0.01
@@ -24,6 +28,7 @@ var _pending_shell_burst: bool = false
 var _pending_impact_position: Vector2 = Vector2.ZERO
 var _pending_impact_target: Node = null
 var _pending_impact_damage: int = 0
+var _last_projectile_angle: float = 0.0
 
 
 func _ready() -> void:
@@ -37,6 +42,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_idle_time += delta
+	if _throw_time_left > 0.0:
+		_last_projectile_angle = _get_egg_projectile_angle()
 	_throw_time_left = maxf(0.0, _throw_time_left - delta)
 	_hit_time_left = maxf(0.0, _hit_time_left - delta)
 	_tick_pending_impact(delta)
@@ -58,6 +65,7 @@ func tick_attack(delta: float, enemies: Array[Node]) -> void:
 	_attack_timer = attack_interval
 	_throw_time_left = EGG_THROW_DURATION
 	_impact_time_left = EGG_THROW_DURATION
+	_last_projectile_angle = _get_egg_projectile_angle()
 	_pending_shell_burst = true
 	_pending_impact_position = target_position
 	_pending_impact_target = target
@@ -105,12 +113,32 @@ func _draw_throw_egg() -> void:
 	var ratio: float = 1.0 - clampf(_throw_time_left / EGG_THROW_DURATION, 0.0, 1.0)
 	var eased_ratio: float = 0.5 - cos(ratio * PI) * 0.5
 	var egg_position: Vector2 = _egg_start.lerp(_egg_end, eased_ratio)
-	var egg_angle: float = _idle_time * 18.0
+	var egg_angle: float = _last_projectile_angle
+	var egg_draw_size := _get_egg_projectile_draw_size()
 
 	draw_set_transform(egg_position, egg_angle, Vector2.ONE)
-	draw_ellipse(Vector2.ZERO, 12.0, 16.0, Color(1.0, 0.95, 0.74, 1.0), true)
-	draw_arc(Vector2.ZERO, 8.0, 0.0, TAU, 16, Color(0.22, 0.12, 0.08, 1.0), 2.0)
+	draw_texture_rect_region(
+		EGG_ANIMATION_SHEET,
+		Rect2(-egg_draw_size * 0.5, egg_draw_size),
+		EGG_PROJECTILE_SOURCE_REGION
+	)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _get_egg_projectile_draw_size() -> Vector2:
+	var projectile_width := CHICKEN_DRAW_BASE_SIZE.x * EGG_PROJECTILE_WIDTH_RATIO
+	return Vector2(
+		projectile_width,
+		projectile_width * EGG_PROJECTILE_SOURCE_REGION.size.y / EGG_PROJECTILE_SOURCE_REGION.size.x
+	)
+
+
+func _get_egg_projectile_angle() -> float:
+	return _idle_time * EGG_CLOCKWISE_SPIN_RADIANS_PER_SECOND
+
+
+func _get_last_projectile_angle() -> float:
+	return _last_projectile_angle
 
 
 func _draw_health_bar() -> void:
@@ -166,12 +194,13 @@ func _tick_pending_impact(delta: float) -> void:
 
 	_pending_impact_target = null
 	_pending_impact_damage = 0
-	_spawn_shell_burst(impact_position)
+	_spawn_shell_burst(impact_position, _last_projectile_angle)
 
 
-func _spawn_shell_burst(spawn_position: Vector2) -> void:
+func _spawn_shell_burst(spawn_position: Vector2, impact_rotation: float) -> void:
 	var shell_burst: Node2D = EggShellBurstScript.new()
 	_add_effect(shell_burst, spawn_position)
+	shell_burst.global_rotation = impact_rotation
 
 
 func _add_effect(effect: Node2D, spawn_position: Vector2) -> void:

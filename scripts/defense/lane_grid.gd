@@ -12,6 +12,7 @@ signal layout_changed(previous_board_rect: Rect2, current_board_rect: Rect2)
 @export var cell_size: Vector2 = Vector2(56, 56)
 @export var cell_gap: float = 8.0
 @export var placement_start_row: int = 4
+@export var enemy_spawn_row_offset: int = -1
 @export var actor_base_cell_size: float = 56.0
 @export var player_domain_tile_texture: Texture2D = GRASS_TILE_TEXTURE
 @export var farmer_domain_tile_texture: Texture2D = PEBBLE_TILE_TEXTURE
@@ -89,7 +90,7 @@ func clamp_placement_cell(cell: Vector2i) -> Vector2i:
 
 
 func get_default_cursor_cell() -> Vector2i:
-	return Vector2i(int(columns / 2), rows - 1)
+	return Vector2i(int(float(columns) / 2.0), rows - 1)
 
 
 func can_place_at(cell: Vector2i) -> bool:
@@ -121,21 +122,27 @@ func apply_actor_scale(actor: Node2D) -> void:
 	actor.scale = Vector2(actor_scale, actor_scale)
 
 
-func get_enemy_spawn_position(lane: int) -> Vector2:
+func get_enemy_spawn_cell_rect(lane: int) -> Rect2:
 	var column := clampi(lane, 0, columns - 1)
+	return Rect2(
+		origin + Vector2(column * cell_size.x, enemy_spawn_row_offset * cell_size.y),
+		cell_size - Vector2(cell_gap, cell_gap)
+	)
+
+
+func get_enemy_spawn_position(lane: int) -> Vector2:
 	var board_rect := get_board_rect()
-	var lane_position := grid_to_world(Vector2i(column, 0))
+	var spawn_rect := get_enemy_spawn_cell_rect(lane)
 	var actor_scale := get_actor_scale()
 	var enemy_half_width := 29.0 * actor_scale
-	var enemy_top_clearance := 58.0 * actor_scale
 	var safe_inset := 1.0
 	return Vector2(
 		clampf(
-			lane_position.x,
+			spawn_rect.get_center().x,
 			board_rect.position.x + enemy_half_width + safe_inset,
 			board_rect.end.x - enemy_half_width - safe_inset
 		),
-		board_rect.position.y + enemy_top_clearance + safe_inset
+		spawn_rect.get_center().y
 	)
 
 
@@ -264,20 +271,25 @@ func _fit_to_viewport(size_override: Vector2 = Vector2.ZERO) -> void:
 
 	var energy_height := 18.0 if wide else 16.0
 	var message_height := 50.0 if wide else 46.0
-	var bottom_reserved := energy_height + message_height + 20.0
+	var bottom_reserved := maxf(energy_height + message_height + 20.0, viewport_size.y * 0.16)
 	var available_height := maxf(float(rows) * 20.0, viewport_size.y - top_reserved - bottom_reserved)
-	var total_size: float = minf(horizontal_grid_space, available_height)
-	var side: float = floorf(total_size / float(columns))
+	var virtual_top_rows := maxf(0.0, -float(enemy_spawn_row_offset))
+	var vertical_cell_count := float(rows) + virtual_top_rows
+	var max_play_area_height := minf(available_height, viewport_size.y * 0.80)
+	var side_from_width := horizontal_grid_space / float(columns)
+	var side_from_height := max_play_area_height / vertical_cell_count
+	var side: float = floorf(minf(side_from_width, side_from_height))
 	var min_side: float = 42.0
 	if viewport_size.x < 520.0 or viewport_size.y < 540.0:
 		min_side = 24.0
 	if viewport_size.x < 460.0 or viewport_size.y < 420.0:
 		min_side = 20.0
 	side = maxf(side, min_side)
+	var play_area_height := side * vertical_cell_count - cell_gap
 	cell_size = Vector2(side, side)
 	origin = Vector2(
 		maxf(10.0, (viewport_size.x - side * float(columns)) * 0.5),
-		maxf(10.0, top_reserved + (available_height - side * float(rows)) * 0.5)
+		maxf(10.0, top_reserved + (available_height - play_area_height) * 0.5 + virtual_top_rows * side)
 	)
 	cursor_cell = clamp_placement_cell(cursor_cell)
 	_reposition_occupied_defenders()

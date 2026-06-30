@@ -1,0 +1,64 @@
+{
+	"assetId": "a6ed92e2-6167-49fc-b8bf-3b2446486ab3",
+	"metadata": {
+		"downloadUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830054/summer_animations/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"fileName": "spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"filename": "spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"id": "a6ed92e2-6167-49fc-b8bf-3b2446486ab3",
+		"metadata": {
+			"animationType": "custom",
+			"entrypoint": "api/art/animate",
+			"fps": 12.0,
+			"frameCount": 8.0,
+			"frameHeight": 217.0,
+			"frameWidth": 256.0,
+			"generatedAt": "2026-06-30T14:34:28.317Z",
+			"individualFrames": [
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830056/summer_animations/frames/frame-0-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830057/summer_animations/frames/frame-1-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830058/summer_animations/frames/frame-2-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830058/summer_animations/frames/frame-3-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830059/summer_animations/frames/frame-4-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830060/summer_animations/frames/frame-5-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830061/summer_animations/frames/frame-6-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830061/summer_animations/frames/frame-7-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png"
+			],
+			"jobId": "b1616d7f-c6f0-4fc3-83ba-4395cfb079fa",
+			"loop": true,
+			"originalFrameHeight": 336.0,
+			"originalFrameWidth": 396.0,
+			"originalFrames": [
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830062/summer_animations/frames-original/frame-0-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830063/summer_animations/frames-original/frame-1-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830064/summer_animations/frames-original/frame-2-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830065/summer_animations/frames-original/frame-3-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830065/summer_animations/frames-original/frame-4-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830066/summer_animations/frames-original/frame-5-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830067/summer_animations/frames-original/frame-6-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+				"https://res.cloudinary.com/dol86wsz1/image/upload/v1782830067/summer_animations/frames-original/frame-7-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png"
+			],
+			"originalSpriteSheetUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830055/summer_animations/spritesheet-396x336-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+			"rawGridUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830028/summer_animations/raw/raw-grid-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+			"seed": 236207996.0,
+			"spriteSheetUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830054/summer_animations/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+			"surface": "studio",
+			"type": "animation",
+			"version": "v6-spritesheet"
+		},
+		"name": "Custom Animation Game Asset",
+		"previewUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830056/summer_animations/frames/frame-0-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"primary": true,
+		"thumbnailUrl": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830056/summer_animations/frames/frame-0-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"title": "Custom Animation Game Asset",
+		"type": "animation",
+		"url": "https://res.cloudinary.com/dol86wsz1/image/upload/v1782830054/summer_animations/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+		"version": "2026-06-30"
+	},
+	"name": "Custom Animation Game Asset",
+	"paths": [
+		"res://assets/summer/a6ed92e2-6167-49fc-b8bf-3b2446486ab3/2026-06-30/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png"
+	],
+	"primaryPath": "res://assets/summer/a6ed92e2-6167-49fc-b8bf-3b2446486ab3/2026-06-30/spritesheet-256-b1616d7f-c6f0-4fc3-83ba-4395cfb079fa.png",
+	"source": "summer-studio",
+	"version": "2026-06-30"
+}

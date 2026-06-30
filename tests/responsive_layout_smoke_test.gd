@@ -5,6 +5,8 @@ const CASES: Array[Dictionary] = [
 	{"name": "medium", "size": Vector2i(640, 480), "right_panel_visible": false},
 	{"name": "portrait", "size": Vector2i(480, 640), "right_panel_visible": false},
 ]
+const MAX_BOARD_HEIGHT_RATIO := 0.72
+const MAX_APPROACH_HEIGHT_RATIO := 0.80
 
 var case_index: int = -1
 var frames: int = 0
@@ -85,8 +87,17 @@ func _check_current_case() -> bool:
 	if columns != 7 or rows != 7:
 		return _fail("%s expected a 7 by 7 grid." % case_name)
 	var board_rect := Rect2(origin, Vector2(cell_size.x * columns, cell_size.y * rows))
+	var drawn_board_rect := Rect2(origin, Vector2(cell_size.x * columns - 8.0, cell_size.y * rows - 8.0))
+	var first_spawn_rect: Rect2 = grid.call("get_enemy_spawn_cell_rect", 0)
+	var approach_top_y := minf(first_spawn_rect.position.y, drawn_board_rect.position.y)
+	var approach_height_ratio := (drawn_board_rect.end.y - approach_top_y) / viewport_size.y
+	var board_height_ratio := drawn_board_rect.size.y / viewport_size.y
 	if not _rect_inside(board_rect, viewport_rect.grow(8.0)):
 		return _fail("%s board does not fit inside the viewport." % case_name)
+	if board_height_ratio > MAX_BOARD_HEIGHT_RATIO:
+		return _fail("%s board uses too much viewport height." % case_name)
+	if approach_height_ratio > MAX_APPROACH_HEIGHT_RATIO:
+		return _fail("%s board plus virtual spawn row uses too much viewport height." % case_name)
 	if board_rect.intersects(top_left_rect):
 		return _fail("%s top-left HUD overlaps the board." % case_name)
 	if board_rect.intersects(energy_meter_rect):
@@ -115,12 +126,14 @@ func _check_current_case() -> bool:
 	for lane in range(columns):
 		var actor_scale: float = grid.call("get_actor_scale")
 		var enemy_position: Vector2 = grid.call("get_enemy_spawn_position", lane)
-		var enemy_rect := Rect2(
-			enemy_position - Vector2(29.0, 58.0) * actor_scale,
-			Vector2(58.0, 94.0) * actor_scale
-		)
-		if not _rect_inside(enemy_rect, Rect2(origin, Vector2(cell_size.x * columns - 8.0, cell_size.y * rows - 8.0))):
-			return _fail("%s enemy spawn for lane %s is outside the grid." % [case_name, lane])
+		var spawn_rect: Rect2 = grid.call("get_enemy_spawn_cell_rect", lane)
+		var enemy_half_width := 29.0 * actor_scale
+		if not spawn_rect.grow(1.0).has_point(enemy_position):
+			return _fail("%s enemy spawn for lane %s is not in the virtual top row." % [case_name, lane])
+		if enemy_position.y >= origin.y:
+			return _fail("%s enemy spawn for lane %s should be above the grid." % [case_name, lane])
+		if enemy_position.x - enemy_half_width < origin.x or enemy_position.x + enemy_half_width > origin.x + cell_size.x * columns - 8.0:
+			return _fail("%s enemy spawn for lane %s is horizontally outside the grid." % [case_name, lane])
 
 	return true
 

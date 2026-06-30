@@ -79,8 +79,8 @@ func _process(_delta: float) -> bool:
 		enemies.add_child(enemy)
 		enemy.call("configure", grid, int(hen.get("lane")), 1)
 		enemy.defeated.connect(Callable(game, "_on_enemy_defeated"))
-		if not _enemy_spawn_is_inside_grid(grid, enemy.global_position):
-			return _fail("Expected enemy to spawn fully inside the grid.")
+		if not _enemy_spawn_uses_virtual_top_row(grid, enemy.global_position, int(enemy.get("lane"))):
+			return _fail("Expected enemy to spawn one row above the grid.")
 		var enemy_start_y := enemy.global_position.y
 		var enemy_walk_time_before := float(enemy.get("_walk_time"))
 		var enemy_frame_before := int(enemy.call("_get_walk_frame_index"))
@@ -102,6 +102,18 @@ func _process(_delta: float) -> bool:
 		var egg_end: Vector2 = hen.get("_egg_end")
 		if absf(egg_start.x - egg_end.x) > 0.01:
 			return _fail("Expected bazooka egg shot to travel straight upward.")
+		var idle_time_before := float(hen.get("_idle_time"))
+		hen.set("_idle_time", 0.0)
+		var chicken_draw_rect: Rect2 = hen.call("_get_chicken_draw_rect")
+		var egg_projectile_size: Vector2 = hen.call("_get_egg_projectile_draw_size")
+		var egg_angle_before := float(hen.call("_get_egg_projectile_angle"))
+		hen.set("_idle_time", 0.1)
+		var egg_angle_after := float(hen.call("_get_egg_projectile_angle"))
+		hen.set("_idle_time", idle_time_before)
+		if absf(egg_projectile_size.x - chicken_draw_rect.size.x * 0.4) > 0.01:
+			return _fail("Expected flying egg width to be two fifths of the hen width.")
+		if egg_angle_after <= egg_angle_before:
+			return _fail("Expected flying egg sprite angle to advance clockwise while traveling.")
 		if not bool(hen.get("_pending_shell_burst")):
 			return _fail("Expected egg impact to queue broken shell VFX.")
 		var shell_bursts_before := _count_egg_shell_bursts(root)
@@ -110,6 +122,15 @@ func _process(_delta: float) -> bool:
 			return _fail("Expected enemy damage to land at the same time as broken shell VFX.")
 		if _count_egg_shell_bursts(root) <= shell_bursts_before:
 			return _fail("Expected broken egg shell VFX to spawn at impact time.")
+		var shell_burst := _find_egg_shell_burst(root)
+		if shell_burst == null:
+			return _fail("Expected broken egg shell VFX instance to be inspectable.")
+		var expected_burst_rotation := float(hen.call("_get_last_projectile_angle"))
+		var burst_rotation_delta := absf(wrapf(shell_burst.global_rotation - expected_burst_rotation, -PI, PI))
+		if burst_rotation_delta > 0.01:
+			return _fail("Expected broken egg shell VFX to keep the egg projectile rotation from impact.")
+		if int(shell_burst.call("_get_current_frame_index")) != 1:
+			return _fail("Expected broken egg shell VFX to start after the whole-egg projectile frame.")
 
 	if frames == 64:
 		if enemies.get_child_count() == 0:
@@ -153,12 +174,17 @@ func _fail(message: String) -> bool:
 	return true
 
 
-func _enemy_spawn_is_inside_grid(grid: Node, enemy_position: Vector2) -> bool:
+func _enemy_spawn_uses_virtual_top_row(grid: Node, enemy_position: Vector2, lane: int) -> bool:
 	var board_rect: Rect2 = grid.call("get_board_rect")
 	var actor_scale: float = grid.call("get_actor_scale")
-	var enemy_top_left := enemy_position - Vector2(29.0, 58.0) * actor_scale
-	var enemy_bottom_right := enemy_position + Vector2(29.0, 36.0) * actor_scale
-	return board_rect.has_point(enemy_top_left) and board_rect.has_point(enemy_bottom_right)
+	var expected_spawn_position: Vector2 = grid.call("get_enemy_spawn_position", lane)
+	var enemy_half_width := 29.0 * actor_scale
+	return (
+		enemy_position.distance_to(expected_spawn_position) <= 0.1
+		and enemy_position.y < board_rect.position.y
+		and enemy_position.x - enemy_half_width >= board_rect.position.x
+		and enemy_position.x + enemy_half_width <= board_rect.end.x
+	)
 
 
 func _defender_visual_bottom_stays_inside_cell(grid: Node, defender: Node) -> bool:
@@ -195,3 +221,14 @@ func _count_egg_shell_bursts(parent: Node) -> int:
 			count += 1
 		count += _count_egg_shell_bursts(child)
 	return count
+
+
+func _find_egg_shell_burst(parent: Node) -> Node:
+	for child in parent.get_children():
+		if child.get_script() == EggShellBurstScript:
+			return child
+		var nested := _find_egg_shell_burst(child)
+		if nested != null:
+			return nested
+
+	return null

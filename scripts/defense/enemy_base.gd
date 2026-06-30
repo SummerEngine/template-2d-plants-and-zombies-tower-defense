@@ -206,15 +206,38 @@ func _on_grid_layout_changed(previous_board_rect: Rect2, current_board_rect: Rec
 		_redraw_health()
 		return
 
+	var lane_position: Vector2 = grid.call("get_enemy_spawn_position", lane)
+	if global_position.y < previous_board_rect.position.y:
+		var previous_spawn_y := _get_spawn_y_for_board(previous_board_rect)
+		var approach_progress := 1.0
+		if previous_board_rect.position.y > previous_spawn_y:
+			approach_progress = clampf(
+				(global_position.y - previous_spawn_y) / (previous_board_rect.position.y - previous_spawn_y),
+				0.0,
+				1.0
+			)
+		global_position = Vector2(
+			lane_position.x,
+			lerpf(lane_position.y, current_board_rect.position.y, approach_progress)
+		)
+		grid.call("apply_depth_sort", self)
+		_redraw_health()
+		return
+
 	var progress := clampf(
 		(global_position.y - previous_board_rect.position.y) / previous_board_rect.size.y,
 		0.0,
 		1.0
 	)
-	var lane_position: Vector2 = grid.call("get_enemy_spawn_position", lane)
 	global_position = Vector2(
 		lane_position.x,
 		lerpf(current_board_rect.position.y, current_board_rect.end.y, progress)
 	)
 	grid.call("apply_depth_sort", self)
 	_redraw_health()
+
+
+func _get_spawn_y_for_board(board_rect: Rect2) -> float:
+	var previous_cell_height := (board_rect.size.y + float(grid.get("cell_gap"))) / float(grid.get("rows"))
+	var spawn_row_offset := float(grid.get("enemy_spawn_row_offset"))
+	return board_rect.position.y + spawn_row_offset * previous_cell_height + (previous_cell_height - float(grid.get("cell_gap"))) * 0.5
