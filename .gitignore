@@ -1,0 +1,33 @@
+# Summer Engine defaults
+.godot/
+*.translation
+.DS_Store
+Thumbs.db
+
+# Keep asset .import files in version control. They store Summer/Godot import
+# metadata that helps the project open consistently on another machine.
+
+# AI tooling
+.claude/
+.specstory/
+
+# Summer Engine local-only state (SummerGit, caches, locks)
+.summer/local/
+
+# Dependencies & build output
+node_modules/
+.next/
+builds/
+export/
+
+# Local helper scripts and generated Python cache
+tools/
+__pycache__/
+*.pyc
+
+# Local editor/project backups
+project.godot.bak
+*.log
+
+# Environment
+.env*

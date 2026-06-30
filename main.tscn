@@ -1,0 +1,203 @@
+[gd_scene format=3 uid="uid://cwj8uuxftdm7k"]
+
+[ext_resource type="Script" uid="uid://caijhcitg0rww" path="res://scripts/defense/defense_game.gd" id="1_defense_game"]
+[ext_resource type="Script" uid="uid://d20ojqon8ftvj" path="res://scripts/defense/lane_grid.gd" id="2_lane_grid"]
+[ext_resource type="Script" uid="uid://b446chw571511" path="res://scripts/core/input_bridge.gd" id="3_input_bridge"]
+[ext_resource type="Script" uid="uid://cuudunf424057" path="res://scripts/core/action_mapper.gd" id="4_action_mapper"]
+[ext_resource type="Script" uid="uid://ck0sewlph2dqk" path="res://scripts/defense/resource_system.gd" id="5_resource_system"]
+[ext_resource type="Script" uid="uid://b6ub0qmxiqfw7" path="res://scripts/defense/placement_controller.gd" id="6_placement_controller"]
+[ext_resource type="Script" uid="uid://bxq0fhpobfxwg" path="res://scripts/defense/wave_director.gd" id="7_wave_director"]
+[ext_resource type="Script" uid="uid://b3gg3wcn7r36n" path="res://scripts/ui/defense_hud.gd" id="8_defense_hud"]
+[ext_resource type="Script" uid="uid://t74xcn1mtgax" path="res://scripts/defense/run_stats.gd" id="9_run_stats"]
+
+[node name="SignalDefenseKit" type="Node2D" unique_id=1851162477]
+script = ExtResource("1_defense_game")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1116231342]
+offset_right = 960.0
+offset_bottom = 540.0
+color = Color(0.055, 0.065, 0.082, 1)
+
+[node name="Board" type="Node2D" parent="." unique_id=1308246498]
+
+[node name="LaneGrid" type="Node2D" parent="Board" unique_id=1397666668]
+script = ExtResource("2_lane_grid")
+
+[node name="Actors" type="Node2D" parent="." unique_id=1322673357]
+
+[node name="Defenders" type="Node2D" parent="Actors" unique_id=1078986759]
+
+[node name="Enemies" type="Node2D" parent="Actors" unique_id=250686146]
+
+[node name="Systems" type="Node" parent="." unique_id=1578360263]
+
+[node name="InputBridge" type="Node" parent="Systems" unique_id=1020098849]
+script = ExtResource("3_input_bridge")
+
+[node name="ActionMapper" type="Node" parent="Systems" unique_id=391348451]
+script = ExtResource("4_action_mapper")
+
+[node name="ResourceSystem" type="Node" parent="Systems" unique_id=2087376989]
+script = ExtResource("5_resource_system")
+
+[node name="PlacementController" type="Node" parent="Systems" unique_id=2049232798]
+script = ExtResource("6_placement_controller")
+
+[node name="WaveDirector" type="Node" parent="Systems" unique_id=262272754]
+script = ExtResource("7_wave_director")
+
+[node name="RunStats" type="Node" parent="Systems" unique_id=2116779851]
+script = ExtResource("9_run_stats")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=639669388]
+script = ExtResource("8_defense_hud")
+
+[node name="Root" type="Control" parent="HUD" unique_id=1570596036]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopLeft" type="MarginContainer" parent="HUD/Root" unique_id=1850570890]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 180.0
+
+[node name="Stats" type="VBoxContainer" parent="HUD/Root/TopLeft" unique_id=830014677]
+layout_mode = 2
+
+[node name="EnergyLabel" type="Label" parent="HUD/Root/TopLeft/Stats" unique_id=3988081]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Energy: 125 / 300"
+
+[node name="BaseLabel" type="Label" parent="HUD/Root/TopLeft/Stats" unique_id=2026962217]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Base: 3"
+
+[node name="WaveLabel" type="Label" parent="HUD/Root/TopLeft/Stats" unique_id=1195770256]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Wave: ready"
+
+[node name="SelectedLabel" type="Label" parent="HUD/Root/TopLeft/Stats" unique_id=1423412261]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Selected: Hen (50)"
+
+[node name="EnergyMeter" type="MarginContainer" parent="HUD/Root" unique_id=331525266]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 410.0
+offset_right = 660.0
+offset_bottom = 428.0
+
+[node name="EnergyBar" type="ProgressBar" parent="HUD/Root/EnergyMeter" unique_id=136133093]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+max_value = 300.0
+value = 125.0
+show_percentage = false
+
+[node name="BottomLeft" type="MarginContainer" parent="HUD/Root" unique_id=1713952797]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 502.0
+offset_right = 790.0
+offset_bottom = 532.0
+
+[node name="ControlsLabel" type="Label" parent="HUD/Root/BottomLeft" unique_id=986759587]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "Move: WASD/arrows   Place: Space   Switch: E/Tab   Remove: Backspace   Restart: R"
+autowrap_mode = 3
+
+[node name="BottomCenter" type="MarginContainer" parent="HUD/Root" unique_id=955222640]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -270.0
+offset_top = -76.0
+offset_right = 270.0
+offset_bottom = -28.0
+
+[node name="MessageLabel" type="Label" parent="HUD/Root/BottomCenter" unique_id=1557275704]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Place defenders before the wave arrives."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="RightPanel" type="MarginContainer" parent="HUD/Root" unique_id=860460187]
+layout_mode = 0
+offset_left = 704.0
+offset_top = 20.0
+offset_right = 940.0
+offset_bottom = 188.0
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="Stack" type="VBoxContainer" parent="HUD/Root/RightPanel" unique_id=984860632]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="HUD/Root/RightPanel/Stack" unique_id=495157921]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Barnyard Defense"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HintLabel" type="Label" parent="HUD/Root/RightPanel/Stack" unique_id=460805451]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Farmers enter from the top. Hold the bottom rows."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="GameOverPanel" type="Panel" parent="HUD/Root" unique_id=615213161]
+visible = false
+layout_mode = 0
+offset_left = 290.0
+offset_top = 152.0
+offset_right = 670.0
+offset_bottom = 388.0
+
+[node name="Margin" type="MarginContainer" parent="HUD/Root/GameOverPanel" unique_id=986554952]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="Stack" type="VBoxContainer" parent="HUD/Root/GameOverPanel/Margin" unique_id=1078556598]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="HUD/Root/GameOverPanel/Margin/Stack" unique_id=991527694]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="ResultsLabel" type="Label" parent="HUD/Root/GameOverPanel/Margin/Stack" unique_id=1731664372]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Farmers chased off: 0"
+horizontal_alignment = 1
+autowrap_mode = 3
