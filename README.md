@@ -6,7 +6,7 @@ This is a small vertical lane-defense construction kit, not a finished game. The
 
 ## Design Goals
 
-- Work with a joystick or D-pad plus 2-3 buttons.
+- Work with a joystick or D-pad plus a few buttons.
 - Keep hardware input separate from game rules.
 - Keep defenders, enemies, waves, resources, and grid rules modular.
 - Make AI feature additions obvious and safe.
@@ -30,8 +30,17 @@ The board has 7 vertical lanes and 7 rows. The player owns the lower rows, and e
 - Move cursor: `W`, `A`, `S`, `D`, arrow keys, joystick, or D-pad
 - Place selected defender: `Space` or Button A
 - Switch defender type: `E`, `Tab`, or Button B
-- Remove defender on selected tile: `Backspace` or Button X
+- Remove defender on selected tile: `Shift`, `Backspace`, or Button X
 - Restart: `R`
+
+## Arduino Controller Bridge
+
+For a handmade controller with one analog joystick and four buttons, use the starter bridge in `hardware/`:
+
+- `hardware/joystick_button_controller/joystick_button_controller.ino`: Arduino sketch that reads joystick/button input and prints `UP`, `DOWN`, `LEFT`, `RIGHT`, `SPACE`, `E`, `SHIFT`, or `R`.
+- `hardware/serial_keyboard_bridge.py`: computer-side receiver that reads those serial commands and taps `W`, `A`, `S`, `D`, `Space`, `E`, `Shift`, or `R` for the focused game window.
+
+See `hardware/README.md` for wiring, upload, and testing steps.
 
 ## Core Modules
 
