@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://bxq0fhpobfxwg" path="res://scripts/defense/wave_director.gd" id="7_wave_director"]
 [ext_resource type="Script" uid="uid://b3gg3wcn7r36n" path="res://scripts/ui/defense_hud.gd" id="8_defense_hud"]
 [ext_resource type="Script" uid="uid://t74xcn1mtgax" path="res://scripts/defense/run_stats.gd" id="9_run_stats"]
+[ext_resource type="Script" path="res://scripts/defense/grass_background.gd" id="10_grass"]
 
 [node name="SignalDefenseKit" type="Node2D" unique_id=1851162477]
 script = ExtResource("1_defense_game")
@@ -16,7 +17,10 @@ script = ExtResource("1_defense_game")
 [node name="Background" type="ColorRect" parent="." unique_id=1116231342]
 offset_right = 960.0
 offset_bottom = 540.0
-color = Color(0.055, 0.065, 0.082, 1)
+color = Color(0.243, 0.435, 0.196, 1)
+
+[node name="GrassField" type="Node2D" parent="." unique_id=1116231343]
+script = ExtResource("10_grass")
 
 [node name="Board" type="Node2D" parent="." unique_id=1308246498]
 

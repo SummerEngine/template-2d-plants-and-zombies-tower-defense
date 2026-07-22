@@ -18,13 +18,20 @@ extends CanvasLayer
 @onready var game_over_panel: Panel = $Root/GameOverPanel
 @onready var game_over_title_label: Label = $Root/GameOverPanel/Margin/Stack/TitleLabel
 @onready var game_over_results_label: Label = $Root/GameOverPanel/Margin/Stack/ResultsLabel
+@onready var root_control: Control = $Root
+
+const HINT_TEXT := "This is a template.\n\nArrow keys / WASD to move.  Space to place.  E to switch what you are placing.\n\nPress any key to begin."
 
 var _message_time_left: float = 0.0
 var _max_energy: int = 1
 var _grid: Node = null
+var _energy_value_label: Label = null
+var _hint_overlay: Control = null
 
 
 func _ready() -> void:
+	# The hint gate pauses the game, so the HUD must keep running while paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	energy_bar.show_percentage = false
 	controls_label.text = "Move: WASD/arrows   Place: Space   Switch: E/Tab   Remove: Backspace   Restart: R"
 	controls_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -32,8 +39,66 @@ func _ready() -> void:
 	right_hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	game_over_results_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	game_over_panel.visible = false
+	_build_energy_value_label()
+	_build_hint_overlay()
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	_apply_responsive_layout()
+	# Hold the field until the player dismisses the hint (any key).
+	get_tree().paused = true
+
+
+func _build_energy_value_label() -> void:
+	# The current energy value, drawn centered on top of the bar itself.
+	_energy_value_label = Label.new()
+	_energy_value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_energy_value_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_energy_value_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_energy_value_label.add_theme_font_size_override("font_size", 12)
+	_energy_value_label.add_theme_color_override("font_color", Color(1, 1, 1))
+	_energy_value_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_energy_value_label.add_theme_constant_override("outline_size", 4)
+	_energy_value_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	energy_bar.add_child(_energy_value_label)
+
+
+func _build_hint_overlay() -> void:
+	_hint_overlay = Control.new()
+	_hint_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hint_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var tint := ColorRect.new()
+	tint.color = Color(0.03, 0.05, 0.03, 0.82)
+	tint.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hint_overlay.add_child(tint)
+
+	var label := Label.new()
+	label.text = HINT_TEXT
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.offset_left = 60.0
+	label.offset_right = -60.0
+	label.offset_top = 60.0
+	label.offset_bottom = -60.0
+	label.add_theme_font_size_override("font_size", 24)
+	_hint_overlay.add_child(label)
+
+	root_control.add_child(_hint_overlay)
+
+
+func _input(event: InputEvent) -> void:
+	if _hint_overlay == null or not _hint_overlay.visible:
+		return
+	var dismiss: bool = (event is InputEventKey and event.pressed and not event.echo) \
+		or (event is InputEventMouseButton and event.pressed) \
+		or (event is InputEventJoypadButton and event.pressed)
+	if dismiss:
+		_hint_overlay.visible = false
+		get_tree().paused = false
+		get_viewport().set_input_as_handled()
 
 
 func _process(delta: float) -> void:
@@ -61,6 +126,8 @@ func set_energy(amount: int, max_amount: int = -1) -> void:
 	energy_label.text = "Energy: %s / %s" % [amount, _max_energy]
 	energy_bar.max_value = float(_max_energy)
 	energy_bar.value = float(clampi(amount, 0, _max_energy))
+	if _energy_value_label != null:
+		_energy_value_label.text = "%s / %s" % [amount, _max_energy]
 
 
 func set_base_health(health: int) -> void:
@@ -156,6 +223,8 @@ func _apply_responsive_layout(size_override: Vector2 = Vector2.ZERO) -> void:
 
 	_set_font_size(energy_label, 22 if wide else 18)
 	energy_bar.custom_minimum_size = Vector2(0, int(energy_height))
+	if _energy_value_label != null:
+		_energy_value_label.add_theme_font_size_override("font_size", 13 if wide else 11)
 	_set_font_size(base_label, 18 if wide else 15)
 	_set_font_size(wave_label, 18 if wide else 15)
 	_set_font_size(selected_label, 18 if wide else 15)

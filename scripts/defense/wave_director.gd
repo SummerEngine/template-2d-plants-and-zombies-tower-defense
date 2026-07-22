@@ -20,6 +20,12 @@ var running: bool = false
 
 var _spawn_timer: float = 0.0
 var _between_wave_timer: float = 0.0
+var _run_time: float = 0.0
+
+## How much each elapsed second shortens the gap between farmers, and the
+## hard floor that gap can never drop below.
+@export var spawn_time_accel: float = 0.01
+@export var min_spawn_interval: float = 0.5
 
 
 func configure(grid_ref: Node, enemies_parent_ref: Node) -> void:
@@ -34,6 +40,7 @@ func reset_and_start() -> void:
 	running = true
 	_between_wave_timer = first_wave_delay
 	_spawn_timer = 0.0
+	_run_time = 0.0
 	wave_changed.emit(wave_number, enemies_remaining_to_spawn)
 
 
@@ -44,6 +51,8 @@ func stop() -> void:
 func _process(delta: float) -> void:
 	if not running or grid == null or enemies_parent == null:
 		return
+
+	_run_time += delta
 
 	if wave_number == 0 or (enemies_remaining_to_spawn == 0 and active_enemy_count == 0):
 		_between_wave_timer = max(0.0, _between_wave_timer - delta)
@@ -57,7 +66,10 @@ func _process(delta: float) -> void:
 	_spawn_timer = max(0.0, _spawn_timer - delta)
 	if _spawn_timer == 0.0:
 		_spawn_enemy()
-		_spawn_timer = max(0.7, spawn_interval - float(wave_number) * 0.12)
+		# Farmers arrive faster the longer the run goes, on top of the
+		# existing per-wave ramp, down to a floor.
+		var gap := spawn_interval - float(wave_number) * 0.12 - _run_time * spawn_time_accel
+		_spawn_timer = max(min_spawn_interval, gap)
 
 
 func _begin_next_wave() -> void:
