@@ -1,0 +1,38 @@
+{
+  "id": "2d-lane-defense",
+  "version": "1.0.0",
+  "name": "2D Lane Defense",
+  "engineMinVersion": "0.5.43",
+  "entryScene": "res://main.tscn",
+  "dimension": "2D",
+  "mechanics": [
+    "lane-defense",
+    "grid-placement",
+    "resource-economy",
+    "auto-attacking-defenders",
+    "wave-spawning",
+    "time-scaled-difficulty",
+    "keyboard-cursor-control",
+    "gamepad-support",
+    "intro-hint-overlay",
+    "hud"
+  ],
+  "genres": [
+    "tower-defense",
+    "strategy",
+    "lane-defense"
+  ],
+  "agentBrief": "A lane-defense (Plants-vs-Zombies-style) tower defense, themed as a barnyard: chickens hold fixed lanes against farmers advancing toward the base (Godot 4.6, 2D, GDScript). ENTRY SCENE: res://main.tscn — its root script is scripts/defense/defense_game.gd, which wires every system together. THERE IS NO [input] SECTION IN project.godot: scripts/core/input_bridge.gd registers the InputMap actions (move_left/right/up/down, primary, secondary, modifier, restart) AT RUNTIME and reads keyboard, gamepad and simulated input; scripts/core/action_mapper.gd turns that raw state into per-frame actions. Add or change controls there, not in project.godot. CONTROLS: arrow keys or WASD move the placement cursor, Space places the selected defender, E or Tab cycles the defender, Backspace or Shift removes at the cursor, R restarts. DEFENDERS are the only placeable set, defined in scripts/defense/placement_controller.gd DEFENDER_TYPES (id, name, cost, script): Hen (50, scripts/defense/chicken_defender.gd — throws eggs down its lane), Golden Goose (75, golden_goose_defender.gd — generates energy over time), Blocker (35, blocker_defender.gd — high-HP wall). NOTE: scripts/defense/shooter_defender.gd exists but is NOT in DEFENDER_TYPES and is referenced nowhere — it is dead/unused; wire it into DEFENDER_TYPES to enable it or delete it. All defenders extend defender_base.gd (cost, max_health, kind, display_name). ECONOMY: scripts/defense/resource_system.gd — starting_energy 125, max 300, passive energy_per_second 4.0, plus enemy_defeat_energy on kills (defense_game.gd); defenders are bought via resource_system.spend(). ENEMIES: a single enemy_base.gd 'farmer' spawned by scripts/defense/wave_director.gd, which runs endless waves (each wave is 2 + wave_number farmers). DIFFICULTY RAMPS TWO WAYS: per wave (spawn gap shrinks by 0.12 * wave_number) AND over elapsed time (gap shrinks by spawn_time_accel per second, floored at min_spawn_interval) — both are @export on WaveDirector. GRID: scripts/defense/lane_grid.gd owns columns/rows, occupancy and the responsive board rect. HUD: scripts/ui/defense_hud.gd (CanvasLayer) — it builds two things IN CODE at runtime, not in main.tscn: the energy value label centered on the meter bar, and the intro hint overlay. THE INTRO HINT PAUSES THE TREE (get_tree().paused = true) until any key is pressed, and the HUD sets its own process_mode to PROCESS_MODE_ALWAYS so it still receives that key while paused — if you add systems that must run during the hint, give them ALWAYS too. scripts/defense/grass_background.gd is a purely decorative painted grass field fit to the viewport. CUSTOMIZE BY: adding entries to DEFENDER_TYPES with a new defender script, retuning costs and wave @exports, restyling the grass and HUD, reskinning the chicken/farmer art in assets/ — do not rewrite the input_bridge/placement/grid spine.",
+  "shipsProjectGodot": true,
+  "userFacing": {
+    "tagline": "Hold the lanes: place your defenders on a grid and stop the advance before it reaches your base.",
+    "highlights": [
+      "Lane-defense tower defense on a placement grid, keyboard or gamepad",
+      "Three defenders with distinct roles: an attacker, an energy generator, and a wall",
+      "An energy economy — earn passively and on kills, spend to place",
+      "Endless waves that ramp up both per wave and the longer you survive",
+      "A grassy field, an energy readout on the meter, and a controls hint on start",
+      "Fully animated: egg-throwing chickens, advancing farmers, hit and pop effects"
+    ]
+  }
+}
