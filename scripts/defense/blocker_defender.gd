@@ -1,8 +1,8 @@
 extends "res://scripts/defense/defender_base.gd"
 
 const HAY_TEXTURE: Texture2D = preload("res://assets/art/hay_bale_defender.png")
-const HAY_DRAW_BASE_SIZE := Vector2(64.0, 47.0)
-const HAY_FEET_LOCAL_Y := 8.0
+const HAY_DRAW_BASE_SIZE := Vector2(54.0, 47.0)
+const HAY_FEET_LOCAL_Y := 16.0
 
 var _hit_time_left: float = 0.0
 
