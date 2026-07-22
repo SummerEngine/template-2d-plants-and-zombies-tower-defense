@@ -11,7 +11,7 @@ const BlockerScript := preload("res://scripts/defense/blocker_defender.gd")
 const DEFENDER_TYPES := [
 	{"id": "hen", "name": "Hen", "cost": 50, "script": ChickenScript},
 	{"id": "goose", "name": "Golden Goose", "cost": 75, "script": GoldenGooseScript},
-	{"id": "blocker", "name": "Blocker", "cost": 35, "script": BlockerScript},
+	{"id": "blocker", "name": "Hay Bale", "cost": 35, "script": BlockerScript},
 ]
 
 @export var move_repeat_delay: float = 0.18

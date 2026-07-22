@@ -1,5 +1,9 @@
 extends "res://scripts/defense/defender_base.gd"
 
+const GOOSE_TEXTURE: Texture2D = preload("res://assets/art/golden_goose_defender.png")
+const GOOSE_DRAW_BASE_SIZE := Vector2(60.0, 66.8)
+const GOOSE_FEET_LOCAL_Y := 20.0
+
 @export var production_interval: float = 6.0
 @export var energy_per_cycle: int = 25
 
@@ -7,6 +11,7 @@ var resource_system: Node = null
 var _production_timer: float = 0.0
 var _idle_time: float = 0.0
 var _pulse_time_left: float = 0.0
+var _hit_time_left: float = 0.0
 
 
 func _ready() -> void:
@@ -26,7 +31,13 @@ func configure_resource_system(resource_ref: Node) -> void:
 func _process(delta: float) -> void:
 	_idle_time += delta
 	_pulse_time_left = maxf(0.0, _pulse_time_left - delta)
+	_hit_time_left = maxf(0.0, _hit_time_left - delta)
 	queue_redraw()
+
+
+func take_damage(amount: int) -> void:
+	_hit_time_left = 0.18
+	super.take_damage(amount)
 
 
 func tick_economy(delta: float) -> void:
@@ -59,28 +70,16 @@ func _draw_shadow() -> void:
 func _draw_goose() -> void:
 	var bob: float = sin(_idle_time * TAU * 1.25) * 2.0
 	var pulse_ratio: float = clampf(_pulse_time_left / 0.5, 0.0, 1.0)
-	var pulse_color := Color(1.0, 0.82, 0.2, 0.22 * pulse_ratio)
-	var center := Vector2(0, bob)
 
+	# Golden glow ring when it pays out energy.
 	if pulse_ratio > 0.0:
-		draw_circle(center + Vector2(0, -4), 46.0 + 8.0 * pulse_ratio, pulse_color, true)
+		var pulse_color := Color(1.0, 0.82, 0.2, 0.22 * pulse_ratio)
+		draw_circle(Vector2(0, bob - 4), 46.0 + 8.0 * pulse_ratio, pulse_color, true)
 
-	draw_ellipse(center + Vector2(0, 8), 24.0, 31.0, Color(1.0, 0.93, 0.62, 1.0), true)
-	draw_ellipse(center + Vector2(-11, 10), 13.0, 20.0, Color(0.96, 0.78, 0.28, 1.0), true)
-	draw_ellipse(center + Vector2(12, 10), 12.0, 19.0, Color(0.96, 0.78, 0.28, 1.0), true)
-	draw_ellipse(center + Vector2(0, -21), 18.0, 17.0, Color(1.0, 0.95, 0.72, 1.0), true)
-	draw_rect(Rect2(center + Vector2(-14, -9), Vector2(28, 22)), Color(1.0, 0.91, 0.52, 1.0), true)
-	draw_polygon(
-		PackedVector2Array([
-			center + Vector2(0, -20),
-			center + Vector2(20, -16),
-			center + Vector2(0, -11),
-		]),
-		PackedColorArray([Color(1.0, 0.55, 0.18, 1.0)])
-	)
-	draw_circle(center + Vector2(-6, -24), 2.6, Color(0.1, 0.06, 0.02, 1.0), true)
-	draw_circle(center + Vector2(6, -24), 2.6, Color(0.1, 0.06, 0.02, 1.0), true)
-	draw_ellipse(center + Vector2(0, 7), 11.0, 15.0, Color(1.0, 0.98, 0.82, 1.0), true)
+	var tint := Color(1.0, 0.64, 0.64, 1.0) if _hit_time_left > 0.0 else Color.WHITE
+	var draw_size := GOOSE_DRAW_BASE_SIZE
+	var draw_position := Vector2(-draw_size.x * 0.5, -draw_size.y + GOOSE_FEET_LOCAL_Y + bob)
+	draw_texture_rect(GOOSE_TEXTURE, Rect2(draw_position, draw_size), false, tint)
 
 
 func _draw_production_meter() -> void:
