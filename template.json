@@ -1,6 +1,6 @@
 {
   "id": "2d-lane-defense",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "name": "2D Lane Defense",
   "engineMinVersion": "0.5.43",
   "entryScene": "res://main.tscn",
