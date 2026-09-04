@@ -18,8 +18,9 @@ The board has 7 vertical lanes and 7 rows. The player owns the lower rows, and e
 
 - Enemies spawn inside the grid and march from top to bottom.
 - Defenders are placed on grid tiles.
-- `Hen` fires eggs from a bamboo bazooka and uses the Summer Studio-generated chicken art.
-- `Blocker` soaks enemy attacks.
+- `Hen` (50 energy) fires eggs from a bamboo bazooka and uses the Summer Studio-generated chicken art.
+- `Golden Goose` (75 energy) generates energy over time.
+- `Hay Bale` (35 energy, internal id `blocker`) soaks enemy attacks.
 - Energy regenerates over time and is spent on defenders.
 - The base has 3 health. If enemies cross the bottom, base health drops.
 - Game over shows total enemies defeated, defeated counts by enemy type, and waves reached.
@@ -54,8 +55,9 @@ See `hardware/README.md` for wiring, upload, and testing steps.
 - `scripts/defense/defender_base.gd`: shared defender health/drawing.
 - `scripts/defense/chicken_defender.gd`: animated hen defender with idle bob, bamboo-bazooka egg shot, broken egg shell impact, hit flash, and pop effects.
 - `scripts/defense/egg_shell_burst_effect.gd`: broken shell and yolk burst VFX for egg impacts.
-- `scripts/defense/shooter_defender.gd`: example attacking defender.
-- `scripts/defense/blocker_defender.gd`: example blocking defender.
+- `scripts/defense/golden_goose_defender.gd`: energy-generating defender.
+- `scripts/defense/blocker_defender.gd`: the Hay Bale blocking defender.
+- `scripts/defense/shooter_defender.gd`: example attacking defender; not registered in `DEFENDER_TYPES`, so it is unused until you wire it in.
 - `scripts/defense/pop_effect.gd`: reusable small VFX pop used by character attacks/defeat.
 - `scripts/defense/enemy_base.gd`: example lane enemy.
 - `scripts/defense/defense_game.gd`: top-level wiring and win/lose/restart flow.
