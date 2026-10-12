@@ -1,8 +1,31 @@
+![Signal Defense Kit](docs/cover.jpg)
+
 # Signal Defense Kit
 
-A 2D Summer Studio starter template for handmade Arduino controller games using simple joystick-and-buttons input.
+A 2D lane-defense starter for Summer Engine: place hens, geese and hay bales on a grid and stop the farmers before they reach your base. Built for keyboard, gamepad or a handmade Arduino joystick-and-buttons controller.
 
 This is a small vertical lane-defense construction kit, not a finished game. The default prototype proves the core loop: move a cursor on a grid, place defenders, switch defender type, remove a defender, survive incoming waves, review a game-over score summary, and restart.
+
+## What's inside
+
+- **Three defenders**: the Hen fires eggs from a bamboo bazooka, the Golden Goose produces energy, and the Hay Bale blocks a lane.
+- **Farmers that march down 7 lanes** in endless waves, with walk and attack animations.
+- **An energy economy**: energy regenerates over time and is spent to place defenders.
+- **Game-over summary** with enemies defeated by type and waves reached, plus instant restart.
+- **Responsive board and HUD** for wide, medium and portrait screens.
+- **Arduino controller bridge**: a sketch and a serial-to-keyboard bridge in `hardware/`.
+
+## Get started
+
+1. Download this repo as a [ZIP](https://github.com/SummerEngine/template-2d-plants-and-zombies-tower-defense/archive/refs/heads/main.zip) or clone it.
+2. Open the folder in [Summer Engine](https://www.summerengine.com/download).
+3. Press Play.
+
+Summer's AI agent can extend the game for you. Try:
+
+- "Add a rooster defender that pecks every farmer in its lane."
+- "Add a fast scarecrow enemy that appears from wave 5."
+- "Add a boss tractor at the end of every tenth wave."
 
 ## Design Goals
 
@@ -18,8 +41,9 @@ The board has 7 vertical lanes and 7 rows. The player owns the lower rows, and e
 
 - Enemies spawn inside the grid and march from top to bottom.
 - Defenders are placed on grid tiles.
-- `Hen` fires eggs from a bamboo bazooka and uses the Summer Studio-generated chicken art.
-- `Blocker` soaks enemy attacks.
+- `Hen` fires eggs from a bamboo bazooka.
+- `Golden Goose` produces energy every few seconds.
+- `Hay Bale` (the blocker) soaks enemy attacks.
 - Energy regenerates over time and is spent on defenders.
 - The base has 3 health. If enemies cross the bottom, base health drops.
 - Game over shows total enemies defeated, defeated counts by enemy type, and waves reached.
@@ -31,7 +55,7 @@ The board has 7 vertical lanes and 7 rows. The player owns the lower rows, and e
 - Place selected defender: `Space` or Button A
 - Switch defender type: `E`, `Tab`, or Button B
 - Remove defender on selected tile: `Shift`, `Backspace`, or Button X
-- Restart: `R`
+- Restart: `R` or Start
 
 ## Arduino Controller Bridge
 
@@ -94,10 +118,10 @@ From the project root, maintainers can run these after feature changes:
 
 The smoke tests confirm simulated input can place defenders, move the cursor, switch defender type, spawn an enemy, reward energy after defeat, show broken egg shell VFX at impact time, show game-over totals, restart, keep the HUD from overlapping the board, and keep actors aligned to grid cells after screen resizing.
 
-## Generated Assets
+## Art Assets
 
-- `assets/art/chicken_rear_bazooka_defender.png`: current Summer Studio-generated transparent rear-view hen sticker with vertical bamboo bazooka and no static egg.
-- Current Summer asset id: `aa746026-6785-40d5-a3ac-4e304e7d0f26`.
+- `assets/art/chicken_rear_bazooka_defender.png`: current transparent rear-view hen sticker with vertical bamboo bazooka and no static egg (Summer asset id `aa746026-6785-40d5-a3ac-4e304e7d0f26`).
+- `assets/art/golden_goose_defender.png`, `assets/art/hay_bale_defender.png`, `assets/sprites/farmer_walk/`, `assets/sprites/farmer_attack/`: the goose, hay bale and farmer art.
 - `assets/art/chicken_bazooka_defender.png`: earlier side/front bamboo-bazooka hen sprite, kept as a reference.
 - `assets/art/chicken_defender.png`: previous egg-holding hen sprite, kept as a reference.
 
